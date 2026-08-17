@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>小红书本地导出</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>收藏＋点赞本地导出</h1>
+        <p>数据只保存在这台电脑的 Chrome 中</p>
+      </div>
+      <span id="runBadge" class="badge neutral">未采集</span>
+    </header>
+
+    <section class="card page-card">
+      <h2>当前页面</h2>
+      <p id="pageStatus" class="status-line">正在检查……</p>
+      <div class="button-row">
+        <button id="startButton" class="primary">开始采集并滚动</button>
+        <button id="stopButton" class="secondary">停止</button>
+      </div>
+      <p class="hint">请先打开自己的个人主页，再进入“收藏”或“赞过”。出现验证码或访问频繁时会自动停止。</p>
+    </section>
+
+    <section class="metrics" aria-label="本机总库统计">
+      <div><strong id="noteCount">0</strong><span>去重笔记</span></div>
+      <div><strong id="membershipCount">0</strong><span>账号栏目记录</span></div>
+      <div><strong id="missingDetailCount">0</strong><span>待补正文</span></div>
+    </section>
+
+    <section class="card">
+      <h2>导出</h2>
+      <button id="safeExportButton" class="primary wide">导出给 Codex（默认去敏）</button>
+      <button id="privateExportButton" class="link-button wide">导出本机私密原始归档</button>
+      <p class="hint">默认文件不含 <code>xsec_token</code>、Cookie、当前登录账号真实 ID 或登录凭据；帖子作者等公开元数据仍会保留。私密归档包含访问令牌，请勿上传或分享。</p>
+    </section>
+
+    <section class="card">
+      <h2>可选：低速补全正文</h2>
+      <label for="scopeSelect">数据范围</label>
+      <select id="scopeSelect">
+        <option value="">请选择一个账号栏目</option>
+      </select>
+      <div class="button-row">
+        <button id="enrichButton" class="secondary">开始低速补全</button>
+        <button id="pauseEnrichButton" class="secondary">暂停</button>
+      </div>
+      <p id="enrichStatus" class="hint">只能补全当前已核验账号的单一栏目。一次管理一个后台标签页；登录跳转、身份不一致或安全验证会立即暂停。</p>
+    </section>
+
+    <section class="card">
+      <h2>完整性诊断</h2>
+      <div id="diagnostics" class="diagnostics">尚无采集记录。</div>
+      <p class="hint">只有接口明确返回“没有下一页”时才标记为完整；仅靠页面滚动得到的数据会标记为部分。</p>
+    </section>
+
+    <section class="card danger-zone">
+      <h2>清理</h2>
+      <button id="purgeTokensButton" class="danger">清除所选范围的访问令牌</button>
+      <button id="deleteScopeButton" class="danger">删除上方所选范围</button>
+      <p class="hint">清除令牌和删除数据都只作用于选中的单一账号栏目；仍被其他范围引用的同一篇笔记会保留。</p>
+    </section>
+
+    <p id="notice" class="notice" role="status" aria-live="polite"></p>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>

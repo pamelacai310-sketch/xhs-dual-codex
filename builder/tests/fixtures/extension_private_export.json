@@ -1,0 +1,69 @@
+{
+  "schema_version": "xhs-dual-codex-export/1",
+  "extension_version": "1.0.0",
+  "profile_namespace": "profile-550e8400-e29b-41d4-a716-446655440000",
+  "export_mode": "private-archive",
+  "generated_at": "2026-08-05T10:00:00.000Z",
+  "warning": "private fixture",
+  "stats": {
+    "total_items": 1,
+    "total_memberships": 2,
+    "complete_runs": 1,
+    "partial_runs": 0
+  },
+  "runs": [
+    {
+      "run_id": "fixture-run",
+      "xsec_token": "RUN_TOKEN_CANARY"
+    }
+  ],
+  "items": [
+    {
+      "note_id": "64a123456789abcdeffedcba",
+      "title": "扩展导出标题完整版",
+      "description": "保留正文 xsec_token=BODY_DIRECT_CANARY\nencoded xsec_token%3DBODY_ENCODED_CANARY\nnested https://safe.example/redirect?target=https%3A%2F%2Fwww.xiaohongshu.com%2Fexplore%2F64a123456789abcdeffedcba%3Fxsec_token%3DNESTED_URL_CANARY",
+      "author": {
+        "id": "author-001",
+        "name": "作者甲"
+      },
+      "note_type": "normal",
+      "liked_count": 45,
+      "tags": ["AI", "工作流"],
+      "safe_url": "https://www.xiaohongshu.com/explore/64a123456789abcdeffedcba",
+      "sources": ["detail_dom"],
+      "first_captured_at": "2026-08-04T09:00:00.000Z",
+      "captured_at": "2026-08-05T10:00:00.000Z",
+      "memberships": [
+        {
+          "account_key": "xhs:aaaaaaaaaaaaaaaa",
+          "account_label": "账号甲新名",
+          "account_verified": true,
+          "mode": "liked",
+          "safe_url": "https://www.xiaohongshu.com/explore/64a123456789abcdeffedcba",
+          "xsec_token": "MEMBERSHIP_TOKEN_A",
+          "private_url": "https://www.xiaohongshu.com/explore/64a123456789abcdeffedcba?xsec_token=MEMBERSHIP_TOKEN_A&xsec_source=pc_user",
+          "first_captured_at": "2026-08-04T09:00:00.000Z",
+          "captured_at": "2026-08-05T10:00:00.000Z",
+          "sources": ["detail_dom"]
+        },
+        {
+          "account_key": "xhs:bbbbbbbbbbbbbbbb",
+          "account_label": "账号乙",
+          "account_verified": true,
+          "mode": "collected",
+          "safe_url": "https://www.xiaohongshu.com/explore/64a123456789abcdeffedcba",
+          "xsec_token": "MEMBERSHIP_TOKEN_B",
+          "private_url": "https://www.xiaohongshu.com/explore/64a123456789abcdeffedcba?xsec_token=MEMBERSHIP_TOKEN_B&xsec_source=pc_user",
+          "first_captured_at": "2026-08-05T09:00:00.000Z",
+          "captured_at": "2026-08-05T10:00:00.000Z",
+          "sources": ["fetch"]
+        }
+      ],
+      "modes": ["liked", "collected"],
+      "accounts": [
+        "xhs:aaaaaaaaaaaaaaaa",
+        "xhs:bbbbbbbbbbbbbbbb"
+      ]
+    }
+  ]
+}

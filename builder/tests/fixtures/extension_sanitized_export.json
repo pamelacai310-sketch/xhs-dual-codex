@@ -1,0 +1,47 @@
+{
+  "schema_version": "xhs-dual-codex-export/1",
+  "extension_version": "1.0.0",
+  "profile_namespace": "profile-550e8400-e29b-41d4-a716-446655440000",
+  "export_mode": "sanitized",
+  "generated_at": "2026-08-04T10:00:00.000Z",
+  "warning": "sanitized fixture",
+  "stats": {
+    "total_items": 1,
+    "total_memberships": 1,
+    "complete_runs": 1,
+    "partial_runs": 0
+  },
+  "runs": [],
+  "items": [
+    {
+      "note_id": "64a123456789abcdeffedcba",
+      "title": "扩展导出标题",
+      "description": "第一版正文",
+      "author": {
+        "id": "author-001",
+        "name": "作者甲"
+      },
+      "note_type": "normal",
+      "liked_count": 42,
+      "tags": ["AI", "效率"],
+      "safe_url": "https://www.xiaohongshu.com/explore/64a123456789abcdeffedcba",
+      "sources": ["fetch"],
+      "first_captured_at": "2026-08-04T09:00:00.000Z",
+      "captured_at": "2026-08-04T10:00:00.000Z",
+      "memberships": [
+        {
+          "account_key": "account-11111111-1111-4111-8111-111111111111",
+          "account_label": "account-11111111-1111-4111-8111-111111111111",
+          "account_verified": true,
+          "mode": "liked",
+          "safe_url": "https://www.xiaohongshu.com/explore/64a123456789abcdeffedcba",
+          "first_captured_at": "2026-08-04T09:00:00.000Z",
+          "captured_at": "2026-08-04T10:00:00.000Z",
+          "sources": ["fetch"]
+        }
+      ],
+      "modes": ["liked"],
+      "accounts": ["account-11111111-1111-4111-8111-111111111111"]
+    }
+  ]
+}
