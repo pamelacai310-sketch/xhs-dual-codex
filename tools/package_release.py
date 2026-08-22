@@ -26,6 +26,7 @@ PACKAGE_PREFIX = f"xhs-dual-codex-v{VERSION}"
 
 PACKAGE_FILES = (
     ".gitignore",
+    "LICENSE",
     "README.md",
     "SECURITY.md",
     "TESTING.md",
@@ -59,7 +60,7 @@ EXECUTABLE_FILES = {
     "builder/build-codex-projects.command",
     "tools/package_release.py",
 }
-ZIP_TIMESTAMP = (2026, 8, 17, 0, 0, 0)
+ZIP_TIMESTAMP = (2026, 8, 22, 0, 0, 0)
 SEMVER_RE = re.compile(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)")
 
 
@@ -68,6 +69,9 @@ def validate() -> None:
         raise RuntimeError(f"版本号异常: {VERSION!r}")
     if any(int(component) > 65535 for component in VERSION.split(".")):
         raise RuntimeError(f"版本号组件超出 Chrome Manifest 上限: {VERSION!r}")
+    license_text = (ROOT / "LICENSE").read_text(encoding="utf-8")
+    if "LICENSE" not in PACKAGE_FILES or not license_text.startswith("MIT License\n"):
+        raise RuntimeError("MIT LICENSE 必须存在并进入发布清单")
     manifest = json.loads((ROOT / "extension/manifest.json").read_text(encoding="utf-8"))
     expected_manifest_keys = {
         "manifest_version", "name", "short_name", "description", "version",
@@ -238,7 +242,7 @@ def release_manifest(file_data: dict[str, bytes]) -> tuple[bytes, list[dict[str,
         "schema_version": "xhs-dual-codex-release/1",
         "version": VERSION,
         "archive": ARCHIVE_NAME,
-        "zip_timestamp_utc": "2026-08-17T00:00:00Z",
+        "zip_timestamp_utc": "2026-08-22T00:00:00Z",
         "files": files,
     }
     return (json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8"), files
