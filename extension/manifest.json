@@ -3,7 +3,7 @@
   "name": "小红书收藏＋点赞本地导出",
   "short_name": "小红书本地导出",
   "description": "在本机采集自己账号可见的收藏与赞过列表，导出后生成去敏的 Codex 学习项目。",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "minimum_chrome_version": "120",
   "permissions": [
     "storage",

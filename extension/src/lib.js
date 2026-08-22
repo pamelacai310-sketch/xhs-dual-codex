@@ -167,18 +167,20 @@
   }
 
   function decodeHtmlEntities(value) {
-    return String(value)
-      .replace(/&amp;/gi, "&")
-      .replace(/&quot;/gi, "\"")
-      .replace(/&#39;|&apos;/gi, "'")
-      .replace(/&#x([0-9a-f]{1,6});/gi, (_, digits) => {
-        const point = Number.parseInt(digits, 16);
-        return Number.isInteger(point) && point <= 0x10ffff ? String.fromCodePoint(point) : "";
-      })
-      .replace(/&#([0-9]{1,7});/g, (_, digits) => {
-        const point = Number.parseInt(digits, 10);
-        return Number.isInteger(point) && point <= 0x10ffff ? String.fromCodePoint(point) : "";
-      });
+    return String(value).replace(
+      /&(?:amp|quot|apos|#x([0-9a-f]{1,6})|#([0-9]{1,7}));/gi,
+      (entity, hexDigits, decimalDigits) => {
+        const named = entity.toLowerCase();
+        if (named === "&amp;") return "&";
+        if (named === "&quot;") return "\"";
+        if (named === "&apos;") return "'";
+        const digits = hexDigits || decimalDigits;
+        const point = Number.parseInt(digits, hexDigits ? 16 : 10);
+        return Number.isInteger(point) && point <= 0x10ffff
+          ? String.fromCodePoint(point)
+          : "";
+      }
+    );
   }
 
   function securityText(value) {

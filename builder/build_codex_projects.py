@@ -409,17 +409,39 @@ def _note_views(record: Mapping[str, Any]) -> list[Mapping[str, Any]]:
     return views
 
 
+def _host_is_or_subdomain(host: str, domain: str) -> bool:
+    """Match a DNS name exactly or below a domain boundary."""
+
+    normalized = str(host or "").casefold().rstrip(".")
+    expected = str(domain or "").casefold().rstrip(".")
+    return bool(normalized and expected) and (
+        normalized == expected or normalized.endswith(f".{expected}")
+    )
+
+
+def _is_xiaohongshu_note_url(value: Any) -> bool:
+    cleaned = sanitize_url(value)
+    if not cleaned:
+        return False
+    parts = urlsplit(cleaned)
+    return _host_is_or_subdomain(parts.hostname or "", "xiaohongshu.com") and bool(
+        NOTE_PATH_RE.search(parts.path)
+    )
+
+
 def _is_note_url(value: Any) -> bool:
     cleaned = sanitize_url(value)
     if not cleaned:
         return False
     parts = urlsplit(cleaned)
     host = (parts.hostname or "").casefold()
-    if host.endswith("xhscdn.com") or re.search(r"\.(?:jpe?g|png|webp|gif|mp4)$", parts.path, re.I):
+    if _host_is_or_subdomain(host, "xhscdn.com") or re.search(
+        r"\.(?:jpe?g|png|webp|gif|mp4)$", parts.path, re.I
+    ):
         return False
-    if "xiaohongshu.com" in host:
+    if _host_is_or_subdomain(host, "xiaohongshu.com"):
         return bool(NOTE_PATH_RE.search(parts.path))
-    if host.endswith("xhslink.com"):
+    if _host_is_or_subdomain(host, "xhslink.com"):
         return True
     return True
 
@@ -437,12 +459,7 @@ def _looks_like_note(record: Mapping[str, Any]) -> bool:
     if _first(views, NOTE_ID_KEYS) not in (None, ""):
         return True
     url_values = list(_all_values(views, NOTE_URL_KEYS))
-    if any(
-        "xiaohongshu.com" in (urlsplit(sanitize_url(value)).hostname or "").casefold()
-        and bool(NOTE_PATH_RE.search(urlsplit(sanitize_url(value)).path))
-        for value in url_values
-        if sanitize_url(value)
-    ):
+    if any(_is_xiaohongshu_note_url(value) for value in url_values):
         return True
     generic_id = _first(views, GENERIC_ID_KEYS)
     title = _first(views, TITLE_KEYS)
@@ -1266,7 +1283,9 @@ def _url_identity(url: str) -> str:
     parts = urlsplit(cleaned)
     host = (parts.hostname or "").casefold()
     path = parts.path.rstrip("/") or "/"
-    if "xiaohongshu.com" in host or host.endswith("xhslink.com"):
+    if _host_is_or_subdomain(host, "xiaohongshu.com") or _host_is_or_subdomain(
+        host, "xhslink.com"
+    ):
         return urlunsplit((parts.scheme, parts.netloc.casefold(), path, "", ""))
     return urlunsplit((parts.scheme, parts.netloc.casefold(), path, parts.query, ""))
 
