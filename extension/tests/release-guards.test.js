@@ -6,7 +6,15 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const extensionRoot = path.join(__dirname, "..");
+const packageRoot = path.join(extensionRoot, "..");
 const source = (relativePath) => fs.readFileSync(path.join(extensionRoot, relativePath), "utf8");
+
+test("release includes the standard MIT license", () => {
+  const license = fs.readFileSync(path.join(packageRoot, "LICENSE"), "utf8");
+  assert.match(license, /^MIT License$/m);
+  assert.match(license, /Permission is hereby granted, free of charge/);
+  assert.match(license, /THE SOFTWARE IS PROVIDED "AS IS"/);
+});
 
 test("enrichment uses a durable single-account lease and bounded retries", () => {
   const background = source("src/background.js");
