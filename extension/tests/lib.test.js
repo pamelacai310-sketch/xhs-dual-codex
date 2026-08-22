@@ -144,6 +144,18 @@ test("redacts raw, URL-encoded, double-encoded and HTML-entity token values", ()
   assert.equal(serialized.includes("&#61;"), false);
 });
 
+test("decodes exactly one HTML entity layer per sanitization pass", () => {
+  for (const [encoded, expected] of [
+    ["&amp;quot;", "&quot;"],
+    ["&#38;quot;", "&quot;"],
+    ["&amp;apos;", "&apos;"],
+    ["&#38;apos;", "&apos;"]
+  ]) {
+    const cleaned = new URL(lib.stripSensitiveUrl(`https://safe.example/a/${encoded}`));
+    assert.equal(cleaned.pathname, `/a/${expected}`, encoded);
+  }
+});
+
 test("redacts tokens, credentials and sensitive URL parameters recursively", () => {
   const input = {
     title: "safe",
@@ -263,6 +275,7 @@ test("cannot bypass decoding with malformed percent escapes or encoded secret na
     "api%255fkey": "DOUBLE_ENCODED_FIELD",
     ["ses\u200bsion%5fid"]: "FORMAT_FIELD",
     "xsec&amp;#x5f;token": "HTML_FIELD",
+    "xsec&amp;amp;#x5f;token": "NESTED_HTML_FIELD",
     safe: "保留"
   };
   const cleanedFields = lib.redactSecrets(dirtyFields);
@@ -272,11 +285,13 @@ test("cannot bypass decoding with malformed percent escapes or encoded secret na
     "畸形在前 %ZZ password%3DMALFORMED_NEIGHBOR",
     "畸形在后 api%255fkey%253DDOUBLE_ENCODED_VALUE%QZ",
     "HTML 与零宽 api&#x200b;&#x5f;key&#x3D;HTML_FORMAT_VALUE",
+    "嵌套 HTML password&amp;amp;#x3D;NESTED_HTML_VALUE",
     "其他格式字符 pass\u180Eword=OTHER_FORMAT_VALUE"
   ].join("\n");
   const cleanedText = lib.sanitizeFreeText(dirtyText);
   for (const secret of [
-    "MALFORMED_NEIGHBOR", "DOUBLE_ENCODED_VALUE", "HTML_FORMAT_VALUE", "OTHER_FORMAT_VALUE"
+    "MALFORMED_NEIGHBOR", "DOUBLE_ENCODED_VALUE", "HTML_FORMAT_VALUE",
+    "NESTED_HTML_VALUE", "OTHER_FORMAT_VALUE"
   ]) {
     assert.equal(cleanedText.includes(secret), false, secret);
   }
@@ -291,6 +306,13 @@ test("cannot bypass decoding with malformed percent escapes or encoded secret na
   for (const secret of ["DOUBLE_QUERY", "FORMAT_QUERY", "HTML_QUERY"]) {
     assert.equal(cleanedUrl.includes(secret), false, secret);
   }
+
+  assert.throws(
+    () => lib.assertSanitizedExport({
+      description: "https&amp;amp;#x3A;//nested-user:nested-pass&#64;example.test/path"
+    }),
+    /凭据链接|去敏导出/
+  );
 });
 
 test("rejects spoofed bridge payloads that exceed byte, depth, node or field limits", () => {

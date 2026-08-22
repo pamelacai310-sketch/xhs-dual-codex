@@ -138,6 +138,45 @@ class NormalizeAndMergeTests(unittest.TestCase):
     def _fixture(self, name: str):
         return json.loads((FIXTURES_DIR / name).read_text(encoding="utf-8"))
 
+    def test_platform_host_matching_requires_dns_boundary(self):
+        for domain in ("xiaohongshu.com", "xhscdn.com", "xhslink.com"):
+            for host in (domain, f"sub.{domain}", f"SUB.{domain.upper()}."):
+                with self.subTest(domain=domain, host=host):
+                    self.assertTrue(builder._host_is_or_subdomain(host, domain))
+            for host in (f"evil{domain}", f"{domain}.evil.example"):
+                with self.subTest(domain=domain, host=host):
+                    self.assertFalse(builder._host_is_or_subdomain(host, domain))
+
+        official = "https://www.xiaohongshu.com/explore/note1234?chapter=1"
+        deceptive = "https://evilxiaohongshu.com/explore/note1234?chapter=1"
+        userinfo_deceptive = (
+            "https://www.xiaohongshu.com@evil.example/explore/note1234?chapter=1"
+        )
+        self.assertTrue(builder._looks_like_note({"url": official}))
+        self.assertFalse(builder._looks_like_note({"url": deceptive}))
+        self.assertFalse(builder._looks_like_note({"url": userinfo_deceptive}))
+        self.assertEqual(urlsplit(builder._url_identity(official)).query, "")
+        self.assertEqual(
+            parse_qsl(urlsplit(builder._url_identity(deceptive)).query),
+            [("chapter", "1")],
+        )
+
+        official_short = "https://go.xhslink.com/r/note1234?chapter=1"
+        deceptive_short = "https://evilxhslink.com/r/note1234?chapter=1"
+        suffix_deceptive_short = (
+            "https://xhslink.com.evil.example/r/note1234?chapter=1"
+        )
+        self.assertEqual(urlsplit(builder._url_identity(official_short)).query, "")
+        for value in (deceptive_short, suffix_deceptive_short):
+            with self.subTest(value=value):
+                self.assertEqual(
+                    parse_qsl(urlsplit(builder._url_identity(value)).query),
+                    [("chapter", "1")],
+                )
+
+        self.assertFalse(builder._is_note_url("https://img.xhscdn.com/object/media"))
+        self.assertTrue(builder._is_note_url("https://evilxhscdn.com/object/note"))
+
     def test_dual_extension_export_memberships_are_preserved(self) -> None:
         payload = {
             "schema_version": "xhs-dual-codex-export/1",
